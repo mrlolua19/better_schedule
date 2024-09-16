@@ -76,7 +76,7 @@ app.post('/schedule', async (req, res) => {
         // Use a for...of loop to iterate over matchingRow
         for (const item of matchingRow) {
           try {
-            const response = await fetch(`http://localhost:8080/https://schedule.kse.ua/index/groups?term=${encodeURIComponent(item.trimEnd())}`, {
+            const response = await fetch(`http://https://mrlolua19.github.io/better_schedule:8080/https://schedule.kse.ua/index/groups?term=${encodeURIComponent(item.trimEnd())}`, {
                 method: 'GET',
                 headers: {
                   'accept': '*/*',
@@ -116,7 +116,7 @@ app.post('/schedule', async (req, res) => {
 
         // Make the request to the schedule only after finding the matching row
         try {
-          const scheduleResponse = await fetch('http://localhost:8080/https://schedule.kse.ua/index/schedule', {
+          const scheduleResponse = await fetch('http://https://mrlolua19.github.io/better_schedule:8080/https://schedule.kse.ua/index/schedule', {
             method: 'POST',
             headers: {
               'accept': '*/*',
@@ -166,7 +166,7 @@ app.listen(3000, () => {
 
 // Start the CORS-Anywhere proxy server
 const corsServer = corsAnywhere.createServer({});
-corsServer.listen(8080, 'localhost', () => {
+corsServer.listen(8080, 'https://mrlolua19.github.io/better_schedule', () => {
   console.log('CORS-Anywhere running on http://localhost:8080');
 });
 
