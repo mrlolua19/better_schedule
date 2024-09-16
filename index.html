@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            animation: fadeBackground 5s ease-in-out infinite;
+        }
+        #response-container {
+            margin-top: 20px;
+        }
+        #response-container div {
+            margin-bottom: 10px;
+        }
+        /* Modal styles */
+        #modal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        #modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        #modal-content input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 80%;
+        }
+        #modal-content button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #modal-content button:hover {
+            background-color: #0056b3;
+        }
+        /* Checkbox style */
+        #remember-checkbox {
+            margin-top: 10px;
+        }
+        #slider-container {
+            margin-top: 10px;
+            text-align: center;
+        }
+        #slider {
+            width: 100%;
+        }
+        #slider-label {
+            margin-top: 5px;
+        }
+        #fetch-button {
+            margin-top: 20px;
+        }
+        #important-text {
+            margin-top: 20px;
+            display: block;
+            font-weight: bold;
+        }
+        #logout-button {
+  border: calc(0.08 * var(--m)) solid transparent;
+  position: relative;
+  color: #F3F3F3;
+  font-family: 'Space Grotesk';
+  font-size: var(--m);
+  border-radius: calc(0.7 * var(--m));
+  padding: calc(0.5 * var(--m)) calc(1 * var(--m));
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  background: linear-gradient(#121213, #121213), linear-gradient(#121213 50%, rgba(18, 18, 19, 0.6) 80%, rgba(18, 18, 19, 0)),  linear-gradient(90deg, var(--orange), var(--yellow), var(--green), var(--blue), var(--purple), var(--pink), var(--red));
+  background-origin: border-box;
+  background-clip: padding-box, border-box, border-box;
+  background-size: 200%;
+  animation: animate 2s infinite linear;
+}
+
+#logout-button::before {
+  content: '';
+  background: linear-gradient(90deg, var(--orange), var(--yellow), var(--green), var(--blue), var(--purple), var(--pink), var(--red));
+  height: 30%;
+  width: 60%;
+  position: absolute;
+  bottom: -20%;
+  z-index: -5;
+  background-size: 200%;
+  animation: animate 2s infinite linear;
+  filter: blur(calc(0.8 * var(--m)));
+}
+
+#logout-button:hover, #logout-button:hover::before {
+  animation: animate 0.5s infinite linear;
+}
+@keyframes fadeBackground {
+    0% {
+        background-color: #39c3ff; /* Light Coral */
+    }
+    50% {
+        background-color: #0c01d4; /* Orange Red */
+    }
+    100% {
+        background-color: #39c3ff; /* Light Coral */
+    }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    animation: fadeBackground 5s ease-in-out infinite;
+}
+
+/* Ensure first column cells do not inherit the animation */
+table td:first-child {
+    background-color: inherit; /* Ensure it does not inherit the animated background */
+}
+
+#schedule-container {
+    max-width: 100%;
+    margin: 20px;
+    font-family: Arial, sans-serif;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+td1 {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    border-bottom-color: rgb(0, 0, 0);
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+blocks {
+    display: block; /* Stack blocks vertically */
+    width: auto; /* Let the block container resize automatically */
+    margin-top: 20px; /* Space between the blocks and the table */
+}
+
+/* Set specific width for the first column */
+th:first-child, td:first-child {
+    width: 150px; /* Set a fixed width for the first column (date column) */
+}
+
+td {
+    width: 100px; /* Adjust the width of lesson time cells */
+}
+
+/* Styling for each lesson block */
+blocks div {
+    margin-bottom: 30px; /* 30px distance between blocks */
+    background-color: #f0f0f0; /* Light background color for clarity */
+    padding: 10px;
+    border-radius: 5px; /* Rounded corners */
+}
+
+.lesson-time {
+    display: inline-block;
+    padding: 7px 14px;
+    border: 2px solid #666699; /* Border color similar to the image */
+    border-radius: 20px;
+    font-family: Arial, sans-serif;
+    color: #666699; /* Text color similar to the image */
+    font-size: 12px;
+    text-align: left; /* Align text to the left */
+    margin: 5px; /* Add some space around */
+    background-color: white; /* Background similar to the image */
+    margin-bottom: 5px;
+}
+.big-bold-text {
+    font-size: 20px;  /* Adjust this value for desired size */
+    background-color: rgba(255, 0, 0, 0);
+    background: 0.5;
+    font-weight: bold;
+    margin-bottom: 0.1px;
+    color: black;
+}
+.small-gray-text {
+    font-size: 14px;  /* Adjust this value for desired size */
+    background-color: rgba(255, 0, 0, 0);
+    margin-bottom: 1px;
+    text-align: left;
+    color: rgb(118, 118, 118);
+}
+.average-text-p {
+    font-size: 15px;  /* Adjust this value for desired size */
+    background-color: rgba(255, 0, 0, 0);
+    text-align: left;
+    margin-bottom: 0.1px;
+    color: rgb(140, 4, 110);
+}
+.average-text-t {
+    font-size: 15px;  /* Adjust this value for desired size */
+    background-color: rgba(255, 0, 0, 0);
+    text-align: left;
+    margin-bottom: 0.1px;
+    color: rgb(4, 40, 140);
+}
+.average-text-g {
+    font-size: 15px;  /* Adjust this value for desired size */
+    background-color: rgba(255, 0, 0, 0);
+    text-align: left;
+    margin-bottom: 0.1px;
+    color: rgb(9, 157, 16);
+}
+.average-text-c {
+    font-size: 15px;  /* Adjust this value for desired size */
+    background-color: rgba(255, 0, 0, 0);
+    text-align: left;
+    margin-bottom: 0.1px;
+}
+.average-text-cdots {
+    font-size: 10px;  /* Adjust this value for desired size */
+    background-color: rgba(255, 0, 0, 0);
+    text-align: left;
+    margin-bottom: 0.03px;
+}
+
+.day-text {
+    font-size: 20px;  /* Adjust this value for desired size */
+    text-align: middle;
+    font-weight: bold;
+    margin-bottom: 50px;
+    color: rgb(0, 0, 0);
+}
+
+/* Existing styles here */
+
+@import url('https://fonts.googleapis.com/css?family=Space%20Grotesk:700|Space%20Grotesk:400');
+
+:root {
+/*  change this for scaling  */
+  --m: 1rem;
+  
+  --red: #FF6565;
+  --pink: #FF64F9;
+  --purple: #6B5FFF;
+  --blue: #4D8AFF;
+  --green: #5BFF89;
+  --yellow: #FFEE55;
+  --orange: #FF6D1B;
+  
+}
+
+
+@keyframes animate {
+  0% {background-position: 0}
+  100% {background-position: 200%}
+}
+
+@media screen and (max-width: 1000px) {
+  :root {
+    --m: 1rem;
+  }
+}
+    </style>     
+</head>
+<body>
+    <button id="logout-button">Log out</button>
+    <strong id="important-text"></strong>
+
+    <!-- Modal box -->
+    <div id="modal">
+        <div id="modal-content">
+            <h2>Enter Values</h2>
+            <label for="value1">Value 1:</label>
+            <input type="text" id="value1" name="value1">
+            <br>
+            <label for="value2">Value 2:</label>
+            <input type="text" id="value2" name="value2">
+            <br>
+            <input type="checkbox" id="remember-checkbox">
+            <label for="remember-checkbox">Remember me</label>
+            <br>
+            <div id="slider-container">
+                <label for="slider">Slider:</label>
+                <input type="range" id="slider" name="slider" min="0" max="59" value="7">
+                <br>
+                <span id="slider-label">7</span>
+            </div>
+            <br>
+            <button id="fetch-button">Fetch Schedule</button>
+        </div>
+    </div>
+
+    <div id="schedule-container"></div>
+    <div id="response-container"></div>
+
+    <script>
+        // Function to show modal
+        document.getElementById('modal').style.display = 'none';
+        function showModal() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        // Function to hide modal
+        function hideModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Check localStorage and handle modal visibility
+        window.onload = function() {
+            const storedValue1 = localStorage.getItem('value1');
+            const storedValue2 = localStorage.getItem('value2');
+            const storedSliderValue = localStorage.getItem('sliderValue') || '7'; // Default to 7 if not set
+            const rememberChecked = localStorage.getItem('rememberChecked') === 'true';
+
+            // Set checkbox state from localStorage
+            document.getElementById('remember-checkbox').checked = rememberChecked;
+            document.getElementById('slider').value = storedSliderValue;
+            document.getElementById('slider-label').textContent = storedSliderValue;
+
+            if (storedValue1 && storedValue2 && rememberChecked) {
+                document.getElementById('important-text').innerText = `${storedValue1} ${storedValue2}`;
+                // Automatically send request using stored values
+                fetchSchedule(storedValue1, storedValue2, storedSliderValue);
+            } else {
+                showModal();
+            }
+        };
+
+        document.getElementById('fetch-button').addEventListener('click', () => {
+            const value1 = document.getElementById('value1').value;
+            const value2 = document.getElementById('value2').value;
+            const sliderValue = document.getElementById('slider').value;
+            document.getElementById('important-text').innerText = `${value1} ${value2}`;
+            const rememberChecked = document.getElementById('remember-checkbox').checked;
+
+            if (rememberChecked) {
+                localStorage.setItem('value1', value1);
+                localStorage.setItem('value2', value2);
+                localStorage.setItem('sliderValue', sliderValue);
+                localStorage.setItem('rememberChecked', 'true');
+            } else {
+                localStorage.removeItem('value1');
+                localStorage.removeItem('value2');
+                localStorage.removeItem('sliderValue');
+                localStorage.removeItem('rememberChecked');
+            }
+
+            hideModal();
+            fetchSchedule(value1, value2, sliderValue);
+        });
+
+        document.getElementById('logout-button').addEventListener('click', () => {
+            localStorage.clear();
+            location.reload();
+        });
+
+        // Update slider label
+        document.getElementById('slider').addEventListener('input', function() {
+            document.getElementById('slider-label').textContent = this.value;
+        });
+
+        async function fetchSchedule(value1, value2, sliderValue) {
+            
+            const value3 = parseInt(document.getElementById('slider').value, 10); // Ensure it's a number
+            console.log(sliderValue);
+            try {
+                const response = await fetch('http://localhost:3000/schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ value1, value2, value3 })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log(data.result);
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.result, 'text/html');
+
+                const dayBlocks = doc.querySelectorAll('.day-block');
+                const lessons = [];
+
+                const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+                const timeSlots = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+                dayBlocks.forEach(dayBlock => {
+                    const day = dayBlock.textContent.trim();
+                    let nextElement = dayBlock.nextElementSibling;
+
+                    while (nextElement && !nextElement.classList.contains('day-block')) {
+                        if (nextElement.classList.contains('pair-block')) {
+                            const pairBlock = nextElement;
+                            const pairName = pairBlock.querySelector('.pair-name')?.textContent.trim();
+                            const discName = pairBlock.querySelector('.disc-name')?.textContent.trim();
+                            const reasonName = pairBlock.querySelector('.reason-name')?.textContent.trim();
+                            const location = pairBlock.querySelector('.text-column a')?.textContent.trim();
+                            const teacher = pairBlock.querySelector('.teacher-icon + .text-column a')?.textContent.trim();
+                            const group = pairBlock.querySelector('.groups-icon + .text-column a')?.textContent.trim();
+                            const comment = pairBlock.querySelector('.comment-text')?.textContent.trim();
+
+                            lessons.push({
+                                day,
+                                pairName,
+                                discName,
+                                reasonName,
+                                location,
+                                teacher,
+                                group,
+                                comment
+                            });
+                        }
+                        nextElement = nextElement.nextElementSibling;
+                    }
+                });
+
+                console.log("Extracted Lessons:", lessons);
+
+                function parseDate(lessonDay) {
+                    const datePattern = /(\d{2}\.\d{2}\.\d{4})/;
+                    const match = lessonDay.match(datePattern);
+                    if (match) {
+                        const [day, month, year] = match[0].split('.');
+                        return new Date(`${year}-${month}-${day}`);
+                    }
+                    return null;
+                }
+
+                const lessonDates = lessons.map(lesson => parseDate(lesson.day)).filter(date => date !== null);
+                const firstDate = new Date(Math.min(...lessonDates));
+                const lastDate = new Date(Math.max(...lessonDates));
+
+                function formatDate(date) {
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}.${month}.${year}`;
+                }
+
+                const allDates = [];
+                let currentDate = new Date(firstDate);
+
+                while (currentDate <= lastDate) {
+                    allDates.push(new Date(currentDate));
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                const container = document.getElementById('schedule-container');
+                container.style.float = 'right';
+
+                const table = document.createElement('table');
+                const body = document.createElement('tbody');
+                const blocks = document.createElement('blocks');
+                blocks.style.float = 'left';
+
+                const headerRow = document.createElement('tr');
+                const firstCell = document.createElement('th');
+                firstCell.width = '80px';
+                headerRow.appendChild(firstCell);
+
+                timeSlots.forEach(slot => {
+                    const th = document.createElement('th');
+                    th.textContent = slot;
+                    th.style.width = '100px';
+                    th.style.textAlign = 'center';
+                    headerRow.appendChild(th);
+                });
+                table.appendChild(headerRow);
+
+                function normalizeTime(time) {
+                    return time.replace(/\s+/g, '');
+                }
+
+                allDates.forEach(date => {
+                const row = document.createElement('tr');
+                const weekDayName = weekDays[date.getDay() === 0 ? 6 : date.getDay() - 1];
+                const formattedDate = formatDate(date);
+                const dayCell = document.createElement('td');
+                dayCell.textContent = `${formattedDate.substring(0, 5)}, ${weekDayName}`;
+                dayCell.width = '80px';
+                row.appendChild(dayCell);
+
+                timeSlots.forEach((slot, index) => {
+                    const cell = document.createElement('td');
+                    cell.style.width = '100px';
+
+                    const lesson = lessons.find(lesson => {
+                        const lessonDate = parseDate(lesson.day);
+                        return lessonDate && formatDate(lessonDate) === formattedDate &&
+                            lesson.pairName.charAt(0) == slot.charAt(0);
+                    });
+
+                    if (lesson) {
+                        cell.style.backgroundColor = '#b0b0ff';
+                        cell.style.cursor = 'pointer'; // Change cursor to pointer
+                        cell.addEventListener('click', () => {
+                            const blockId = `lesson-${lessons.indexOf(lesson)}`;
+                            const block = document.getElementById(blockId);
+                            if (block) {
+                                block.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        });
+                    } else {
+                        cell.style.backgroundColor = '#f0f0f0';
+                    }
+
+                    if (date.getDay() === 0) {
+                        cell.style.borderBottomColor = 'rgb(0, 0, 0)';
+                        cell.style.borderBottomWidth = '3px';
+                    }
+
+                    row.appendChild(cell);
+                });
+
+                body.appendChild(row);
+            });
+
+                Daylessons = [];
+                lessons.forEach(dayLesson => {
+                    Daylessons.push(dayLesson.day);
+                })
+                Daylessons = Array.from(new Set(Daylessons));
+                Daylessons.forEach(day => {
+                const daymine = document.createElement('day-text');
+                daymine.textContent = day.toUpperCase();
+                daymine.classList.add('day-text');
+                blocks.appendChild(daymine);
+
+                lessons.forEach((lesson, index) => {
+                    if (lesson.day === day) {
+                        const block = document.createElement('div');
+                        block.id = `lesson-${index}`; // Add an ID for scrolling
+                        block.classList.add('lesson-block'); // Add a class for styling if needed
+
+                        const lessonTime = document.createElement('div');
+                        lessonTime.textContent = lesson.pairName;
+                        lessonTime.classList.add('lesson-time');
+                        block.appendChild(lessonTime);
+
+                        const lessonName = document.createElement('div');
+                        lessonName.textContent = lesson.discName;
+                        lessonName.classList.add('big-bold-text');
+                        block.appendChild(lessonName);
+
+                        if(lesson.reasonName){
+                            const lessonType = document.createElement('div');
+                            lessonType.textContent = lesson.reasonName;
+                            lessonType.classList.add('small-gray-text');
+                            block.appendChild(lessonType);
+                        }
+                        
+                        const lessonPlace = document.createElement('div');
+                        lessonPlace.textContent = lesson.location;
+                        lessonPlace.classList.add('average-text-p');
+                        block.appendChild(lessonPlace);
+
+                        if (lesson.teacher){
+                            const lessonTeacher = document.createElement('div');
+                            lessonTeacher.textContent = lesson.teacher;
+                            lessonTeacher.classList.add('average-text-t');
+                            block.appendChild(lessonTeacher);
+                        }
+
+                        const lessonGroup = document.createElement('div');
+                        lessonGroup.textContent = lesson.group;
+                        lessonGroup.classList.add('average-text-g');
+                        block.appendChild(lessonGroup);
+
+                        if (lesson.comment){
+                            const lessonCommentDots = document.createElement('div');
+                            lessonCommentDots.textContent = "--------------------------------------------------------------------------------------------------------------";
+                            lessonCommentDots.classList.add('average-text-cdots');
+                            block.appendChild(lessonCommentDots);
+                            const lessonComment = document.createElement('div');
+                            lessonComment.textContent = lesson.comment;
+                            lessonComment.classList.add('average-text-c');
+                            block.appendChild(lessonComment);
+                        }
+
+                        blocks.appendChild(block);
+                    }
+                });
+
+                })
+                console.log(Daylessons)
+                
+
+                table.appendChild(body);
+                container.appendChild(table);
+                console.log(blocks);
+                container.appendChild(blocks);
+                                
+                document.getElementById('schedule-container').style.visibility = 'visible';
+
+            } catch (error) {
+                console.error('Error fetching schedule:', error);
+            }
+        }
+    </script>
+</body>
+</html>
