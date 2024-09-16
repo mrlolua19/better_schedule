@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const API_KEY = 'AIzaSyD76pxre8mt15zwjL7fxlZjJZfmnGtkDnI';
+const API_KEY = 'key';
 const SHEET_ID = '18xycNIvtDSotyKdIaLmapDb8I1-ErOIGspJs_36QuGM';
 const RANGE = `A:EJ`;
 
