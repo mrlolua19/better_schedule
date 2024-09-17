@@ -148,6 +148,12 @@ th, td {
     text-align: left;
 }
 
+/* Ensure all table cells have proper vertical alignment */
+th, td {
+    vertical-align: top; /* Align text to the top of each cell */
+    word-wrap: break-word; /* Allow breaking of words within the cell if necessary */
+}
+
 td1 {
     border: 1px solid #ddd;
     padding: 8px;
@@ -183,8 +189,9 @@ blocks {
 /* Set specific width for the first column */
 th:first-child, td:first-child {
     width: 150px; /* Set a fixed width for the first column (date column) */
+    white-space: nowrap; /* Prevent line breaks */
+    vertical-align: top; /* Align text to the top */
 }
-
 td {
     width: 100px; /* Adjust the width of lesson time cells */
 }
@@ -244,6 +251,7 @@ blocks div {
     background-color: rgba(255, 0, 0, 0);
     text-align: left;
     margin-bottom: 0.1px;
+    margin-top: 0;
     color: rgb(9, 157, 16);
 }
 .average-text-c {
@@ -257,7 +265,20 @@ blocks div {
     background-color: rgba(255, 0, 0, 0);
     text-align: left;
     margin-bottom: 0.03px;
+    margin-top: 0.03px
 }
+
+.line {
+    width: 400px;
+    height: 0; /* No height */
+    line-height: 0; /* Remove line-height */
+    border-top: 0.5px solid black; /* Thin border, 0.5px */
+    margin: 0; /* Ensure no spacing above/below */
+    margin-bottom: 0.03px;
+    padding: 0; /* Remove padding */
+    margin-left: 2px;
+}
+
 
 .day-text {
     font-size: 20px;  /* Adjust this value for desired size */
@@ -291,10 +312,19 @@ blocks div {
   100% {background-position: 200%}
 }
 
-@media screen and (max-width: 1000px) {
-  :root {
+
+/* Adjust cell height for mobile devices */
+@media screen and (max-width: 600px) {
+    :root {
     --m: 1rem;
   }
+    td, th {
+        padding: 4px; /* Reduce padding for smaller screens */
+    }
+    
+    th:first-child, td:first-child {
+        width: auto; /* Let the first column adjust on smaller screens */
+    }
 }
     </style>     
 </head>
@@ -400,7 +430,7 @@ blocks div {
             const value3 = parseInt(document.getElementById('slider').value, 10); // Ensure it's a number
             console.log(sliderValue);
             try {
-                const response = await fetch(' https://b5b1-176-111-180-96.ngrok-free.app/schedule', {
+                const response = await fetch('http://localhost:3000/schedule', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -607,8 +637,7 @@ blocks div {
 
                         if (lesson.comment){
                             const lessonCommentDots = document.createElement('div');
-                            lessonCommentDots.textContent = "--------------------------------------------------------------------------------------------------------------";
-                            lessonCommentDots.classList.add('average-text-cdots');
+                            lessonCommentDots.classList.add('line');
                             block.appendChild(lessonCommentDots);
                             const lessonComment = document.createElement('div');
                             lessonComment.textContent = lesson.comment;
